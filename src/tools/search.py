@@ -232,6 +232,61 @@ def register_search_tools(mcp: FastMCP):
                 
                 logger.warning(f"Direct Google search failed: {e}")
                 
+                # Try direct Bing fallback first
+                try:
+                    if ctx:
+                        await ctx.info("🔄 Attempting direct Bing fallback...")
+                        await ctx.report_progress(progress=50, total=100)
+                    
+                    bing_engine = BingSearchEngine()
+                    bing_results = await bing_engine.search(
+                        query=query,
+                        num_results=num_results,
+                        extract_content=True,
+                        follow_links=False,
+                        max_depth=1
+                    )
+                    
+                    if bing_results:
+                        if ctx:
+                            await ctx.info(f"✅ Direct Bing fallback successful: {len(bing_results)} results")
+                            await ctx.report_progress(progress=100, total=100)
+                        
+                        # Convert Bing results to the expected format
+                        result_dicts = []
+                        for result in bing_results:
+                            result_dicts.append({
+                                "title": result.title,
+                                "url": result.url,
+                                "description": result.description,
+                                "position": result.position,
+                                "engine": "bing",
+                                "timestamp": result.timestamp
+                            })
+                        
+                        return {
+                            "status": "success",
+                            "method": "direct_bing_fallback",
+                            "results": result_dicts,
+                            "metadata": {
+                                "total_results": len(result_dicts),
+                                "search_method": "direct_bing_fallback",
+                                "query": query,
+                                "timestamp": datetime.now().isoformat(),
+                                "fallback_reason": str(e)
+                            },
+                            "query": query,
+                            "execution_time": datetime.now().isoformat()
+                        }
+                    else:
+                        if ctx:
+                            await ctx.warning("⚠️ Direct Bing fallback returned no results")
+                        
+                except Exception as bing_error:
+                    if ctx:
+                        await ctx.warning(f"⚠️ Direct Bing fallback failed: {str(bing_error)}")
+                    logger.warning(f"Direct Bing fallback failed: {bing_error}")
+                
                 if use_multi_engine:
                     # Fallback to multi-engine search
                     try:
@@ -273,9 +328,50 @@ def register_search_tools(mcp: FastMCP):
                     except Exception as fallback_error:
                         if ctx:
                             await ctx.error(f"❌ Multi-engine fallback also failed: {str(fallback_error)}")
+                            await ctx.info("🔄 Attempting final rival_retrieve fallback...")
                         
                         logger.error(f"Multi-engine fallback failed: {fallback_error}")
-                        error_msg = f"Both direct Google search and multi-engine fallback failed. Direct error: {e}, Fallback error: {fallback_error}"
+                        
+                        # Final fallback using rival_retrieve
+                        try:
+                            if ctx:
+                                await ctx.report_progress(progress=90, total=100)
+                            
+                            rival_results = await rival_retrieve(
+                                resource=query,
+                                limit=num_results,
+                                max_length=2000
+                            )
+                            
+                            if rival_results and rival_results != f"Failed to retrieve content from {query}":
+                                if ctx:
+                                    await ctx.info("✅ Final rival_retrieve fallback successful")
+                                    await ctx.report_progress(progress=100, total=100)
+                                
+                                return {
+                                    "status": "success",
+                                    "method": "rival_retrieve_fallback",
+                                    "results": [{"content": rival_results, "source": "rival_retrieve"}],
+                                    "metadata": {
+                                        "total_results": 1,
+                                        "search_method": "rival_retrieve_fallback",
+                                        "query": query,
+                                        "timestamp": datetime.now().isoformat(),
+                                        "fallback_reason": f"Direct: {e}, Multi-engine: {fallback_error}"
+                                    },
+                                    "query": query,
+                                    "execution_time": datetime.now().isoformat()
+                                }
+                            else:
+                                if ctx:
+                                    await ctx.warning("⚠️ Final rival_retrieve fallback returned no results")
+                                
+                        except Exception as rival_error:
+                            if ctx:
+                                await ctx.error(f"❌ Final rival_retrieve fallback also failed: {str(rival_error)}")
+                            logger.error(f"Final rival_retrieve fallback failed: {rival_error}")
+                        
+                        error_msg = f"All search methods failed. Direct: {e}, Multi-engine: {fallback_error}, Rival-retrieve: {rival_error if 'rival_error' in locals() else 'not attempted'}"
                         if ctx:
                             await ctx.error(f"❌ {error_msg}")
                         
