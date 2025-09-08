@@ -50,10 +50,24 @@ class BaseSearchResult(ABC):
         except:
             return "unknown"
     
-    @abstractmethod
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary for JSON serialization. Must be implemented by subclasses."""
-        pass
+        """Convert to dictionary for JSON serialization."""
+        return {
+            "url": self.url,
+            "title": self.title,
+            "description": self.description,
+            "position": self.position,
+            "engine": self.engine,
+            "timestamp": self.timestamp,
+            "content_hash": self.content_hash,
+            "search_snippet": self.search_snippet,
+            "search_position": self.search_position,
+            "is_organic": self.is_organic,
+            "has_rich_snippet": self.has_rich_snippet,
+            "rich_snippet_type": self.rich_snippet_type,
+            "estimated_traffic": self.estimated_traffic,
+            "search_features": self.search_features,
+        }
     
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(url={self.url}, title={self.title}, engine={self.engine}, position={self.position})"
