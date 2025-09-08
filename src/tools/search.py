@@ -139,66 +139,42 @@ def register_search_tools(mcp: FastMCP):
                     ctx=ctx
                 )
 
-                if results:
+                if results and results.get('summary', {}).get('total_results', 0) > 0:
                     if ctx:
-                        await ctx.info(f"✅ Direct search successful: {len(results)} results")
+                        await ctx.info(f"✅ Direct search successful: {results['summary']['total_results']} results")
                         await ctx.report_progress(progress=60, total=100)
                     
                     # Convert results to dict format for serialization
                     result_dicts = []
                     if isinstance(results, dict) and 'results' in results:
-                        # Multi-search returned structured results
-                        for result in results['results']:
-                            if isinstance(result, dict):
-                                result_dicts.append(result)
-                            else:
-                                # Handle MultiSearchResult objects - ensure all values are serializable
-                                try:
-                                    result_dicts.append({
-                                        "title": str(getattr(result, 'title', '')),
-                                        "url": str(getattr(result, 'url', '')),
-                                        "description": str(getattr(result, 'description', '')),
-                                        "position": int(getattr(result, 'position', 0)),
-                                        "engine": str(getattr(result, 'engine', 'multi_engine')),
-                                        "timestamp": str(getattr(result, 'timestamp', '')),
-                                    })
-                                except Exception as attr_error:
-                                    # Fallback to basic string representation
-                                    logger.warning(f"Error extracting attributes from result: {attr_error}")
-                                    result_dicts.append({
-                                        "title": str(result) if hasattr(result, '__str__') else 'Unknown',
-                                        "url": "",
-                                        "description": "",
-                                        "position": 0,
-                                        "engine": "multi_engine",
-                                        "timestamp": datetime.now().isoformat(),
-                                    })
-                    else:
-                        # Handle direct results list
-                        for result in results:
-                            if isinstance(result, dict):
-                                result_dicts.append(result)
-                            else:
-                                try:
-                                    result_dicts.append({
-                                        "title": str(getattr(result, 'title', '')),
-                                        "url": str(getattr(result, 'url', '')),
-                                        "description": str(getattr(result, 'description', '')),
-                                        "position": int(getattr(result, 'position', 0)),
-                                        "engine": str(getattr(result, 'engine', 'multi_engine')),
-                                        "timestamp": str(getattr(result, 'timestamp', '')),
-                                    })
-                                except Exception as attr_error:
-                                    # Fallback to basic string representation
-                                    logger.warning(f"Error extracting attributes from result: {attr_error}")
-                                    result_dicts.append({
-                                        "title": str(result) if hasattr(result, '__str__') else 'Unknown',
-                                        "url": "",
-                                        "description": "",
-                                        "position": 0,
-                                        "engine": "multi_engine",
-                                        "timestamp": datetime.now().isoformat(),
-                                    })
+                        # Multi-search returned structured results - extract from all engines
+                        for engine_name, engine_data in results['results'].items():
+                            if engine_data.get('status') == 'success' and engine_data.get('results'):
+                                for result in engine_data['results']:
+                                    if isinstance(result, dict):
+                                        result_dicts.append(result)
+                                    else:
+                                        # Handle MultiSearchResult objects - ensure all values are serializable
+                                        try:
+                                            result_dicts.append({
+                                                "title": str(getattr(result, 'title', '')),
+                                                "url": str(getattr(result, 'url', '')),
+                                                "description": str(getattr(result, 'description', '')),
+                                                "position": int(getattr(result, 'position', 0)),
+                                                "engine": str(getattr(result, 'engine', engine_name)),
+                                                "timestamp": str(getattr(result, 'timestamp', '')),
+                                            })
+                                        except Exception as attr_error:
+                                            # Fallback to basic string representation
+                                            logger.warning(f"Error extracting attributes from result: {attr_error}")
+                                            result_dicts.append({
+                                                "title": str(result) if hasattr(result, '__str__') else 'Unknown',
+                                                "url": "",
+                                                "description": "",
+                                                "position": 0,
+                                                "engine": engine_name,
+                                                "timestamp": datetime.now().isoformat(),
+                                            })
                     
                     # Extract metadata
                     search_metadata = {
@@ -217,7 +193,7 @@ def register_search_tools(mcp: FastMCP):
 
                     if ctx:
                         await ctx.report_progress(progress=100, total=100)
-                        await ctx.info(f"🎯 Search completed successfully with {len(results)} results")
+                        await ctx.info(f"🎯 Search completed successfully with {len(result_dicts)} results")
                     
                     return {
                         "status": "success",
