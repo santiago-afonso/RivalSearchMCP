@@ -117,8 +117,11 @@ app = FastMCP(
     on_duplicate_prompts="replace"
 )
 
-# Register middleware for production readiness
-register_middleware(app)
+# Register middleware only in production mode (HTTP)
+if ENVIRONMENT == "production":
+    register_middleware(app)
+else:
+    logger.info("Skipping middleware registration for stdio mode")
 
 # Register all tools using modular approach
 register_retrieval_tools(app)
@@ -135,11 +138,10 @@ register_prompts(app)
 # Register resources
 register_resources(app)
 
-# Register custom routes
-register_custom_routes(app)
-
 if __name__ == "__main__":
     if ENVIRONMENT == "production":
+        # Register custom routes only in production (HTTP mode)
+        register_custom_routes(app)
         logger.info(f"Starting RivalSearchMCP in production mode on port {PORT}")
         app.run(
             transport="http",

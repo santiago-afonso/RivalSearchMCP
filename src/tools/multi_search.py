@@ -165,6 +165,7 @@ class MultiSearchOrchestrator:
                     "summary": {
                         "query": query,
                         "primary_engine": "bing",
+                        "successful_engines": 1,
                         "total_results": len(bing_results),
                         "extract_content": extract_content,
                         "follow_links": follow_links,

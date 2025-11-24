@@ -3,6 +3,14 @@
 
 Advanced MCP server for web research, content discovery, and trends analysis.
 
+## Origin & fork status
+
+This repository (`santiago-afonso/RivalSearchMCP`) is a personal fork of the
+original project [`damionrashford/RivalSearchMCP`](https://github.com/damionrashford/RivalSearchMCP).
+The goal of this fork is to track upstream while experimenting with local
+improvements and stdio-focused tooling for MCP clients (Claude Desktop, Cursor,
+VS Code/Continue, etc.).
+
 ## What it does
 
 RivalSearchMCP provides comprehensive tools for accessing web content, performing multi-engine searches, analyzing websites, conducting research workflows, and analyzing trends data. It includes 6 core tool categories for comprehensive web research capabilities.
@@ -85,6 +93,30 @@ Add this configuration to your MCP client:
 - **Progress Tracking**: Real-time progress reporting for long-running operations
 - **Data Export**: Multiple format support (CSV, JSON, SQL) for trends data
 - **Intelligent Crawling**: Smart website traversal with configurable depth and modes
+
+## Changes in this fork vs upstream
+
+On top of the upstream `main` branch, this fork currently includes a small
+number of local changes tailored for stdio usage and easier local testing:
+
+- **Stdio‑friendly server startup** – middleware and custom HTTP routes are only
+  registered when `ENVIRONMENT=production`, so stdio mode runs without HTTP
+  middleware that expects an HTTP context.
+- **Safer rate limiting middleware** – the rate limiting middleware now guards
+  access to `fastmcp_context.client_id`, avoiding attribute errors when the
+  context is missing or partial.
+- **HTTP client configuration tweaks** – `fastmcp>=2.0.0` is explicitly added to
+  `requirements.txt`, and the shared `httpx.AsyncClient` is configured with
+  `verify=False` to work around SSL certificate issues in constrained
+  environments.
+- **Multi‑engine search metadata** – when Bing is the primary engine, the
+  multi‑search summary now includes a `successful_engines` count in the
+  metadata, making it easier for clients to understand how many engines
+  returned usable results.
+- **Local testing & setup helpers** – local helper files such as
+  `QUICKSTART.md`, `MCP_CONFIG.md`, `SUMMARY.md`, and simple stdio test scripts
+  (`test_stdio.py`, `test_google_search.py`) are provided to make it easier to
+  verify the server locally and to document the stdio configuration.
 
 ## Documentation
 

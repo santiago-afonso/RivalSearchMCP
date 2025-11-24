@@ -23,6 +23,7 @@ async def get_http_client() -> httpx.AsyncClient:
             timeout=30.0,
             follow_redirects=True,
             headers={"User-Agent": get_random_user_agent()},
+            verify=False,  # Disable SSL verification to avoid cert issues
         )
     return _http_client
 

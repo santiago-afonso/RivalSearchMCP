@@ -89,8 +89,8 @@ class RateLimitingMiddleware(Middleware):
     
     def _get_client_id(self, context: MiddlewareContext) -> str:
         """Extract client identifier from context."""
-        if self.per_client and context.fastmcp_context:
-            return context.fastmcp_context.client_id or "unknown"
+        if self.per_client and hasattr(context, 'fastmcp_context') and context.fastmcp_context:
+            return getattr(context.fastmcp_context, 'client_id', 'unknown') or "unknown"
         return "global"
     
     async def on_request(self, context: MiddlewareContext, call_next):
