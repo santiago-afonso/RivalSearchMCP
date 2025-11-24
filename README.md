@@ -5,11 +5,11 @@ Advanced MCP server for web research, content discovery, and trends analysis.
 
 ## Origin & fork status
 
-This repository (`santiago-afonso/RivalSearchMCP`) is a personal fork of the
-original project [`damionrashford/RivalSearchMCP`](https://github.com/damionrashford/RivalSearchMCP).
-The goal of this fork is to track upstream while experimenting with local
-improvements and stdio-focused tooling for MCP clients (Claude Desktop, Cursor,
-VS Code/Continue, etc.).
+This repository is a personal fork of the
+original project [`damionrashford/RivalSearchMCP`](https://github.com/damionrashford/RivalSearchMCP),
+hosted under a separate GitHub account. The goal of this fork is to track
+upstream while experimenting with local improvements and stdio-focused tooling
+for MCP clients (Claude Desktop, Cursor, VS Code/Continue, etc.).
 
 ## What it does
 
@@ -26,9 +26,22 @@ RivalSearchMCP provides comprehensive tools for accessing web content, performin
 
 ## How to get started
 
-### Connect to Live Server
+### Use this fork locally (stdio)
 
-Add this configuration to your MCP client:
+This fork is primarily focused on running RivalSearchMCP as a **local MCP
+server over stdio**. For local setup, configuration examples, and stdio test
+scripts, see:
+
+- `QUICKSTART.md` – step‑by‑step local/stdio quick start
+- `MCP_CONFIG.md` – example MCP client configurations (Claude Desktop, Cursor,
+  VS Code/Continue, generic MCP clients)
+- `SUMMARY.md` – current stdio status and test results
+
+### Connect to upstream live server
+
+The original project also maintains a **hosted** RivalSearchMCP instance on
+FastMCP Cloud. To use that upstream live server instead of a local instance,
+add this configuration to your MCP client:
 
 **For Cursor:**
 ```json
