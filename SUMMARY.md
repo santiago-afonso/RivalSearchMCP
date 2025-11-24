@@ -20,8 +20,8 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 {
   "mcpServers": {
     "rivalsearchmcp": {
-      "command": "/home/safonso/RivalSearchMCP/.venv/bin/python",
-      "args": ["/home/safonso/RivalSearchMCP/server.py"]
+      "command": "/path/to/RivalSearchMCP/.venv/bin/python",
+      "args": ["/path/to/RivalSearchMCP/server.py"]
     }
   }
 }

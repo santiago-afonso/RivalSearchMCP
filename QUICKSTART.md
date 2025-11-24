@@ -37,8 +37,8 @@ Use the absolute paths for your system. Update the paths in the examples below:
 {
   "mcpServers": {
     "rivalsearchmcp": {
-      "command": "/home/safonso/RivalSearchMCP/.venv/bin/python",
-      "args": ["/home/safonso/RivalSearchMCP/server.py"]
+      "command": "/path/to/RivalSearchMCP/.venv/bin/python",
+      "args": ["/path/to/RivalSearchMCP/server.py"]
     }
   }
 }

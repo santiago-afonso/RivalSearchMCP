@@ -11,8 +11,8 @@ Add this to your Claude Desktop MCP settings file:
 {
   "mcpServers": {
     "rivalsearchmcp": {
-      "command": "/home/safonso/RivalSearchMCP/.venv/bin/python",
-      "args": ["/home/safonso/RivalSearchMCP/server.py"],
+      "command": "/path/to/RivalSearchMCP/.venv/bin/python",
+      "args": ["/path/to/RivalSearchMCP/server.py"],
       "env": {
         "ENVIRONMENT": "development"
       }
@@ -29,8 +29,8 @@ Add this to `.cursorrules` or MCP settings:
 {
   "mcpServers": {
     "rivalsearchmcp": {
-      "command": "/home/safonso/RivalSearchMCP/.venv/bin/python",
-      "args": ["/home/safonso/RivalSearchMCP/server.py"]
+      "command": "/path/to/RivalSearchMCP/.venv/bin/python",
+      "args": ["/path/to/RivalSearchMCP/server.py"]
     }
   }
 }
@@ -45,8 +45,8 @@ Add this to `~/.continue/config.json`:
   "mcpServers": [
     {
       "name": "rivalsearchmcp",
-      "command": "/home/safonso/RivalSearchMCP/.venv/bin/python",
-      "args": ["/home/safonso/RivalSearchMCP/server.py"]
+      "command": "/path/to/RivalSearchMCP/.venv/bin/python",
+      "args": ["/path/to/RivalSearchMCP/server.py"]
     }
   ]
 }
@@ -58,8 +58,8 @@ Add this to `~/.continue/config.json`:
 {
   "mcpServers": {
     "rivalsearchmcp": {
-      "command": "/home/safonso/RivalSearchMCP/.venv/bin/python",
-      "args": ["/home/safonso/RivalSearchMCP/server.py"],
+      "command": "/path/to/RivalSearchMCP/.venv/bin/python",
+      "args": ["/path/to/RivalSearchMCP/server.py"],
       "transport": {
         "type": "stdio"
       }
